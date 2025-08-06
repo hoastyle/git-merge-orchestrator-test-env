@@ -1,0 +1,24 @@
+# Test YAML configuration 31
+# Generated for testing purposes
+
+general:
+  app_name: test_app_31
+  version: "1.6"
+  debug: true
+
+database:
+  host: localhost
+  port: 5432
+  name: test_db_31
+  user: test_user
+  password: test_pass
+
+cache:
+  enabled: false
+  ttl: 1563
+  max_size: 593
+
+logging:
+  level: DEBUG
+  file: logs/test_31.log
+  max_size: 77MB

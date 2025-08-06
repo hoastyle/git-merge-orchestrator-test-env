@@ -1,0 +1,67 @@
+{
+  "name": "ignore_patterns_config",
+  "version": "1.0.0",
+  "description": "文件忽略模式配置",
+  "patterns": {
+    "build_artifacts": [
+      "build/",
+      "dist/",
+      "out/",
+      "target/",
+      "*.o",
+      "*.obj",
+      "*.exe",
+      "*.dll",
+      "*.so"
+    ],
+    "dependencies": [
+      "node_modules/",
+      "vendor/",
+      ".yarn/",
+      "site-packages/",
+      "Pods/"
+    ],
+    "cache_files": [
+      "*.pyc",
+      "*.pyo",
+      "*.pyd",
+      "__pycache__/",
+      "*.class",
+      "*.jar",
+      ".gradle/"
+    ],
+    "temporary_files": [
+      "*.tmp",
+      "*.temp",
+      "*.swp",
+      "*.swo",
+      "*~",
+      ".DS_Store",
+      "Thumbs.db"
+    ],
+    "log_files": [
+      "*.log",
+      "*.log.*",
+      "logs/",
+      "log/"
+    ],
+    "ide_files": [
+      ".vscode/",
+      ".idea/",
+      "*.sublime-*",
+      ".eclipse/",
+      ".settings/"
+    ],
+    "version_control": [
+      ".git/",
+      ".svn/",
+      ".hg/",
+      ".bzr/"
+    ]
+  },
+  "rules": {
+    "apply_global_patterns": true,
+    "respect_gitignore": true,
+    "case_sensitive": false
+  }
+}

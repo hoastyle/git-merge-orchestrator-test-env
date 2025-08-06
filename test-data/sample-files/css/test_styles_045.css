@@ -1,0 +1,52 @@
+/*
+ * Test CSS module 45
+ * Generated for testing purposes
+ */
+
+.test-component-045 {
+    background-color: #4ecdc4;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+}
+
+.test-component-045 h1 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.test-component-045 p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.test-component-045 .button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.test-component-045 .button:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .test-component-045 {
+        padding: 15px;
+        margin: 5px;
+    }
+    
+    .test-component-045 h1 {
+        font-size: 20px;
+    }
+}

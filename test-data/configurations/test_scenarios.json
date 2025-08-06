@@ -1,0 +1,46 @@
+{
+  "name": "test_scenarios_config",
+  "version": "1.0.0",
+  "description": "测试场景配置定义",
+  "scenarios": {
+    "merge_conflicts": {
+      "description": "合并冲突测试",
+      "files_count": 20,
+      "contributors": 3,
+      "conflict_probability": 0.3,
+      "branches": [
+        "feature-1",
+        "feature-2"
+      ]
+    },
+    "file_level_processing": {
+      "description": "文件级处理测试",
+      "files_count": 50,
+      "contributors": 5,
+      "processing_mode": "file_level",
+      "directory_depth": 4
+    },
+    "load_balancing": {
+      "description": "负载均衡测试",
+      "files_count": 100,
+      "contributors": 8,
+      "imbalance_ratio": 3.0,
+      "heavy_contributors": 2
+    },
+    "performance": {
+      "description": "性能压力测试",
+      "files_count": 500,
+      "contributors": 10,
+      "commit_history": 1000,
+      "timeout_limit": 60
+    }
+  },
+  "validation": {
+    "max_execution_time": 300,
+    "max_memory_usage": "1GB",
+    "success_criteria": {
+      "completion_rate": 0.95,
+      "error_rate": 0.05
+    }
+  }
+}

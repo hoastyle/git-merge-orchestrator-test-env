@@ -1,0 +1,23 @@
+{
+  "name": "performance_test_config",
+  "version": "1.0.0",
+  "description": "性能测试专用配置",
+  "performance": {
+    "target_files": 1000,
+    "max_contributors": 20,
+    "max_branches": 50,
+    "timeout_seconds": 300,
+    "memory_limit_mb": 512
+  },
+  "benchmarks": {
+    "file_analysis_time_ms": 100,
+    "contributor_analysis_time_ms": 500,
+    "task_assignment_time_ms": 200,
+    "script_generation_time_ms": 50
+  },
+  "monitoring": {
+    "enable_profiling": true,
+    "log_performance_stats": true,
+    "track_memory_usage": true
+  }
+}

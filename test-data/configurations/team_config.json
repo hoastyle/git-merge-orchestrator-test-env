@@ -1,0 +1,67 @@
+{
+  "name": "team_collaboration_config",
+  "version": "1.0.0",
+  "description": "团队协作测试配置",
+  "teams": {
+    "frontend": {
+      "members": [
+        "Frontend-Dev1",
+        "Frontend-Dev2",
+        "UI-Designer"
+      ],
+      "specialization": [
+        "*.js",
+        "*.jsx",
+        "*.css",
+        "*.html",
+        "*.vue"
+      ],
+      "max_tasks": 30
+    },
+    "backend": {
+      "members": [
+        "Backend-Dev1",
+        "Backend-Dev2",
+        "API-Dev"
+      ],
+      "specialization": [
+        "*.py",
+        "*.java",
+        "*.go",
+        "*.rs"
+      ],
+      "max_tasks": 40
+    },
+    "devops": {
+      "members": [
+        "DevOps-Engineer",
+        "SRE"
+      ],
+      "specialization": [
+        "*.yml",
+        "*.yaml",
+        "*.sh",
+        "Dockerfile",
+        "*.tf"
+      ],
+      "max_tasks": 20
+    },
+    "qa": {
+      "members": [
+        "QA-Tester1",
+        "QA-Tester2"
+      ],
+      "specialization": [
+        "*test*.py",
+        "*spec*.js",
+        "*.feature"
+      ],
+      "max_tasks": 25
+    }
+  },
+  "collaboration_rules": {
+    "cross_team_review": true,
+    "require_team_lead_approval": false,
+    "auto_assign_by_expertise": true
+  }
+}

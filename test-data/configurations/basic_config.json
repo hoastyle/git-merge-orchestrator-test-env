@@ -1,0 +1,21 @@
+{
+  "name": "basic_test_config",
+  "version": "1.0.0",
+  "description": "基础测试配置",
+  "settings": {
+    "max_files_per_group": 5,
+    "max_tasks_per_person": 50,
+    "active_months": 3,
+    "analysis_months": 12
+  },
+  "contributors": [
+    "TestUser1",
+    "TestUser2",
+    "TestUser3"
+  ],
+  "ignore_patterns": [
+    "*.pyc",
+    "*.log",
+    ".DS_Store"
+  ]
+}

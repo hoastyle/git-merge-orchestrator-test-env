@@ -1,0 +1,162 @@
+# Git Merge Orchestrator 测试目录 - Git忽略规则
+
+# =============================================================================
+# 测试生成的文件和目录 - 不应该版本管理
+# =============================================================================
+
+# 测试仓库 - 动态生成，不需要版本管理
+test-repos/*/
+!test-repos/.gitkeep
+
+# 日志文件 - 测试运行时生成
+logs/*.log
+logs/*.json
+logs/*.md
+logs/*.txt
+!logs/.gitkeep
+
+# 测试场景配置 - 动态生成的JSON配置
+scenarios/*.json
+!scenarios/.gitkeep
+
+# 临时测试数据
+test-data/temp/
+test-data/generated/
+test-data/cache/
+
+# =============================================================================
+# Python相关
+# =============================================================================
+
+# 字节码文件
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 分布和打包
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# 单元测试 / 覆盖报告
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# 虚拟环境
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# =============================================================================
+# Git和版本控制
+# =============================================================================
+
+# 备份文件
+*.bak
+*.backup
+*.orig
+*.tmp
+
+# =============================================================================
+# 系统文件
+# =============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+
+# =============================================================================
+# 特定于项目的忽略
+# =============================================================================
+
+# 性能测试输出
+benchmark_*.json
+performance_*.log
+
+# 调试和分析文件
+debug.log
+trace.log
+profile.out
+
+# 临时脚本
+temp_*.sh
+temp_*.py
+
+# 用户自定义配置
+local_config.json
+user_settings.json
+
+# 密钥和敏感信息
+*.key
+*.pem
+*.p12
+secrets.json
+.env.local
+
+# =============================================================================
+# 保留的空目录占位文件
+# =============================================================================
+
+# 确保重要目录被跟踪，但内容被忽略
+!.gitkeep

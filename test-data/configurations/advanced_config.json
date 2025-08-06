@@ -1,0 +1,48 @@
+{
+  "name": "advanced_test_config",
+  "version": "2.0.0",
+  "description": "高级测试配置",
+  "processing_mode": "file_level",
+  "settings": {
+    "max_files_per_group": 10,
+    "max_tasks_per_person": 200,
+    "active_months": 6,
+    "analysis_months": 24,
+    "enable_caching": true,
+    "cache_expiry_hours": 48,
+    "max_worker_threads": 8
+  },
+  "contributors": [
+    "SeniorDev1",
+    "SeniorDev2",
+    "JuniorDev1",
+    "JuniorDev2",
+    "TeamLead",
+    "Architect"
+  ],
+  "ignore_patterns": [
+    "*.pyc",
+    "*.pyo",
+    "*.pyd",
+    "__pycache__/",
+    "*.log",
+    "*.tmp",
+    ".DS_Store",
+    "node_modules/",
+    "build/",
+    "dist/",
+    ".vscode/",
+    ".idea/"
+  ],
+  "branch_patterns": {
+    "feature_prefix": "feat/",
+    "bugfix_prefix": "fix/",
+    "hotfix_prefix": "hotfix/",
+    "integration_template": "integration-{source}-{target}"
+  },
+  "load_balancing": {
+    "enabled": true,
+    "max_imbalance_ratio": 2.0,
+    "prefer_recent_contributors": true
+  }
+}
