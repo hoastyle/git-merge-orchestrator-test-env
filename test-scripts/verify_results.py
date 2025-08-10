@@ -315,11 +315,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Git Merge Orchestrator 测试结果验证")
-    parser.add_argument(
-        "--test-dir",
-        default=".",
-        help="测试目录路径",
-    )
+    parser.add_argument("--test-dir", default=".", help="测试目录路径")
     parser.add_argument("--scenario", help="验证特定场景（可选）")
 
     args = parser.parse_args()

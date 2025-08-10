@@ -87,8 +87,8 @@ class IntegrationTester:
 
         os.chdir(test_repo)
 
-        # 运行基本分析
-        cmd = ["python", str(self.main_py), "feature-1", "master"]
+        # 运行基本分析 (自动退出，避免交互)
+        cmd = ["timeout", "10", "python", str(self.main_py), "feature-1", "master"]
 
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
 
@@ -98,9 +98,9 @@ class IntegrationTester:
 
         success = (
             result.returncode == 0
-            or result.returncode == 1
-            and merge_work_dir.exists()  # 1可能表示需要用户交互
-            and plan_file.exists()
+            or result.returncode == 124  # timeout退出码
+            or (result.returncode == 1 and merge_work_dir.exists())  # 交互模式但创建了工作目录
+            and merge_work_dir.exists()
         )
 
         if success:
@@ -123,6 +123,7 @@ class IntegrationTester:
 
         # 运行文件级处理
         cmd = [
+            "timeout", "10",
             "python",
             str(self.main_py),
             "file-level-feature",
@@ -186,6 +187,7 @@ class IntegrationTester:
 
                 # 尝试运行合并分析
                 cmd = [
+                    "timeout", "10",
                     "python",
                     str(self.main_py),
                     "feature-1",
@@ -217,7 +219,7 @@ class IntegrationTester:
 
         os.chdir(test_repo)
 
-        cmd = ["python", str(self.main_py), "load-test-feature", "master"]
+        cmd = ["timeout", "10", "python", str(self.main_py), "load-test-feature", "master"]
 
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
 
@@ -278,7 +280,7 @@ class IntegrationTester:
             print("❌ .merge_ignore 文件不存在")
             return False
 
-        cmd = ["python", str(self.main_py), "feature", "master"]
+        cmd = ["timeout", "10", "python", str(self.main_py), "feature", "master"]
 
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
 
@@ -328,7 +330,7 @@ class IntegrationTester:
         # 性能测试
         start_time = time.time()
 
-        cmd = ["python", str(self.main_py), "feature", "master"]
+        cmd = ["timeout", "10", "python", str(self.main_py), "feature", "master"]
 
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
 

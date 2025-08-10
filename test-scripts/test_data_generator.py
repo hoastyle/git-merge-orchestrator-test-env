@@ -869,11 +869,7 @@ def main():
         choices=["python", "javascript", "css", "html", "json", "markdown", "config"],
         help="指定要生成的文件类型",
     )
-    parser.add_argument(
-        "--base-dir",
-        default=".",
-        help="测试目录基础路径",
-    )
+    parser.add_argument("--base-dir", default=".", help="测试目录基础路径")
 
     args = parser.parse_args()
 

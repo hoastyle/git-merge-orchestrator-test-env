@@ -263,7 +263,7 @@ export LOG_LEVEL=DEBUG
 
 ```bash
 # 运行完整测试套件并生成报告
-python ../git-merge-orchestrator/run_tests.py --full --report-dir ./logs
+python ../run_tests.py --full --report-dir ./logs
 ```
 
 ### 性能基准测试
