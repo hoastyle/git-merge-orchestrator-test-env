@@ -141,7 +141,7 @@ cleanup_files() {
 
     # 使用清理脚本
     if [ -f "test-scripts/cleanup.py" ]; then
-        python test-scripts/cleanup.py --all --quiet
+        python test-scripts/cleanup.py --all --force
         log_success "测试环境已清理"
     fi
 
