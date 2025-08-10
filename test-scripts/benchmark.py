@@ -19,10 +19,15 @@ class PerformanceBenchmark:
     """性能基准测试类"""
 
     def __init__(self, test_base_dir):
-        self.test_base_dir = Path(test_base_dir)
-        self.gmo_path = self.test_base_dir.parent / "git-merge-orchestrator"
+        self.test_base_dir = Path(test_base_dir).absolute()
+        self.gmo_path = self.test_base_dir.parent
         self.creator = TestRepoCreator(str(test_base_dir))
         self.benchmark_results = {}
+
+        # 验证main.py存在
+        self.main_py = self.gmo_path / "main.py"
+        if not self.main_py.exists():
+            raise RuntimeError(f"找不到主程序: {self.main_py.absolute()}")
 
     def run_benchmark_suite(self, scenarios=None, iterations=3):
         """运行基准测试套件"""
@@ -137,13 +142,11 @@ class PerformanceBenchmark:
 
             cmd = [
                 "python",
-                str(self.gmo_path / "main.py"),
-                "--processing-mode",
-                mode,
+                str(self.main_py),
                 source_branch,
                 target_branch,
-                "--auto-analyze",
-                "--quiet",
+                "--processing-mode",
+                mode,
             ]
 
             try:
@@ -444,11 +447,7 @@ def main():
     )
     parser.add_argument("--iterations", type=int, default=3, help="每个场景的迭代次数")
     parser.add_argument("--output", help="输出报告文件路径（可选）")
-    parser.add_argument(
-        "--test-dir",
-        default=".",
-        help="测试目录路径",
-    )
+    parser.add_argument("--test-dir", default=".", help="测试目录路径")
 
     args = parser.parse_args()
 

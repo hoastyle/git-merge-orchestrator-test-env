@@ -17,9 +17,14 @@ class IntegrationTester:
     """集成测试执行器"""
 
     def __init__(self, test_base_dir):
-        self.test_base_dir = Path(test_base_dir)
-        self.gmo_path = self.test_base_dir.parent / "git-merge-orchestrator"
+        self.test_base_dir = Path(test_base_dir).absolute()
+        self.gmo_path = self.test_base_dir.parent
         self.results = []
+
+        # 验证main.py存在
+        self.main_py = self.gmo_path / "main.py"
+        if not self.main_py.exists():
+            raise RuntimeError(f"找不到主程序: {self.main_py}")
 
     def run_all_tests(self):
         """运行所有集成测试"""
@@ -83,13 +88,7 @@ class IntegrationTester:
         os.chdir(test_repo)
 
         # 运行基本分析
-        cmd = [
-            "python",
-            str(self.gmo_path / "main.py"),
-            "feature-1",
-            "master",
-            "--auto-analyze",
-        ]
+        cmd = ["python", str(self.main_py), "feature-1", "master"]
 
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
 
@@ -125,12 +124,11 @@ class IntegrationTester:
         # 运行文件级处理
         cmd = [
             "python",
-            str(self.gmo_path / "main.py"),
-            "--processing-mode",
-            "file_level",
+            str(self.main_py),
             "file-level-feature",
             "master",
-            "--auto-analyze",
+            "--processing-mode",
+            "file_level",
         ]
 
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=90)
@@ -189,12 +187,11 @@ class IntegrationTester:
                 # 尝试运行合并分析
                 cmd = [
                     "python",
-                    str(self.gmo_path / "main.py"),
+                    str(self.main_py),
                     "feature-1",
                     "master",
                     "--strategy",
                     "standard",
-                    "--auto-analyze",
                 ]
 
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
@@ -220,13 +217,7 @@ class IntegrationTester:
 
         os.chdir(test_repo)
 
-        cmd = [
-            "python",
-            str(self.gmo_path / "main.py"),
-            "load-test-feature",
-            "master",
-            "--auto-analyze",
-        ]
+        cmd = ["python", str(self.main_py), "load-test-feature", "master"]
 
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
 
@@ -287,13 +278,7 @@ class IntegrationTester:
             print("❌ .merge_ignore 文件不存在")
             return False
 
-        cmd = [
-            "python",
-            str(self.gmo_path / "main.py"),
-            "ignore-test",
-            "master",
-            "--auto-analyze",
-        ]
+        cmd = ["python", str(self.main_py), "feature", "master"]
 
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
 
@@ -343,13 +328,7 @@ class IntegrationTester:
         # 性能测试
         start_time = time.time()
 
-        cmd = [
-            "python",
-            str(self.gmo_path / "main.py"),
-            "feature",
-            "master",
-            "--auto-analyze",
-        ]
+        cmd = ["python", str(self.main_py), "feature", "master"]
 
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
 
@@ -431,11 +410,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Git Merge Orchestrator 集成测试")
-    parser.add_argument(
-        "--test-dir",
-        default=".",
-        help="测试目录路径",
-    )
+    parser.add_argument("--test-dir", default=".", help="测试目录路径")
 
     args = parser.parse_args()
 
