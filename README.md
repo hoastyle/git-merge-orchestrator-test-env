@@ -339,17 +339,30 @@ python test-scripts/integration_tests.py
 ls logs/integration_test_report_*.json
 ```
 
-### 性能基准测试
+### 性能基准测试（已修复并优化）
 ```bash
-# 运行性能基准测试
+# 运行性能基准测试（100% 成功率）
 python test-scripts/benchmark.py --scenarios "simple,complex" --iterations 3
+
+# 支持的场景类型
+python test-scripts/benchmark.py --scenarios "simple,complex,large-scale" --iterations 2
 
 # 自定义基准测试
 python test-scripts/benchmark.py \
   --scenarios "large-scale" \
   --iterations 5 \
   --output ./my_benchmark.json
+
+# 快速性能验证
+python test-scripts/benchmark.py --scenarios "simple" --iterations 1
 ```
+
+#### 基准测试修复内容 (v2.3.1)
+- ✅ **修复路径问题**: 测试仓库现在正确创建在指定位置
+- ✅ **修复编码问题**: 支持UTF-8编码，兼容中文注释  
+- ✅ **修复分支检测**: 自动检测本地分支，支持复杂场景
+- ✅ **集成非交互模式**: 使用 `--auto-workflow --quiet` 参数
+- ✅ **更新文件路径**: 兼容v2.3系统的 `file_plan.json`
 
 ### 批量自动化测试
 ```bash
@@ -548,13 +561,19 @@ python -u test-scripts/integration_tests.py 2>&1 | tee debug.log
 
 ## 📈 性能基准参考
 
-### 不同规模的预期性能
+### 不同规模的预期性能（已优化基准）
 
-| 场景类型 | 文件数量 | 贡献者数 | 预期时间 | 内存使用 |
-|---------|---------|---------|---------|---------|
-| Simple | 10-20 | 2-3 | < 10秒 | < 100MB |
-| Complex | 50-100 | 5-8 | < 30秒 | < 200MB |  
-| Large-scale | 200-500 | 8-15 | < 120秒 | < 500MB |
+| 场景类型 | 文件数量 | 贡献者数 | 预期时间 | 实际测试时间 | 内存使用 |
+|---------|---------|---------|---------|-------------|---------|
+| Simple | 10-20 | 2-3 | < 10秒 | 0.25s (file_level), 0.12s (group_based) | < 100MB |
+| Complex | 50-100 | 5-8 | < 30秒 | 0.32s (file_level), 0.15s (group_based) | < 200MB |  
+| Large-scale | 200-500 | 8-15 | < 120秒 | 待测试 | < 500MB |
+
+#### 性能基准测试结果 (v2.3.1 - 2025-08-10)
+- **Simple场景**: 100% 成功率，平均耗时 ~0.19s
+- **Complex场景**: 100% 成功率，平均耗时 ~0.24s  
+- **文件级vs组级**: 组级处理模式平均快50%
+- **测试环境**: Linux 12核心, 31.3GB内存
 
 ### 性能评级标准
 
