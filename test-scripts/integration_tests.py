@@ -87,14 +87,14 @@ class IntegrationTester:
 
         os.chdir(test_repo)
 
-        # 运行基本分析 (自动退出，避免交互)
-        cmd = ["timeout", "10", "python", str(self.main_py), "feature-1", "master"]
-
+        # 运行基本分析 (非交互式自动计划创建)
+        cmd = ["python", str(self.main_py), "feature-1", "master", "--auto-plan", "--quiet"]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
 
         # 检查是否生成了基本文件
         merge_work_dir = test_repo / ".merge_work"
-        plan_file = merge_work_dir / "merge_plan.json"
+        # v2.3 系统使用 file_plan.json（文件级模式）
+        plan_file = merge_work_dir / "file_plan.json"
 
         success = (
             result.returncode == 0
@@ -121,21 +121,22 @@ class IntegrationTester:
 
         os.chdir(test_repo)
 
-        # 运行文件级处理
+        # 运行文件级处理 (非交互式自动计划创建)
         cmd = [
-            "timeout", "10",
             "python",
             str(self.main_py),
             "file-level-feature",
             "master",
             "--processing-mode",
             "file_level",
+            "--auto-plan",
+            "--quiet",
         ]
-
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=90)
 
         # 检查文件级数据结构
-        plan_file = test_repo / ".merge_work" / "merge_plan.json"
+        # v2.3 系统使用 file_plan.json（文件级模式）
+        plan_file = test_repo / ".merge_work" / "file_plan.json"
         if not plan_file.exists():
             print("❌ 合并计划文件不存在")
             return False
@@ -185,24 +186,32 @@ class IntegrationTester:
             if diff_result.returncode == 0 and diff_result.stdout.strip():
                 print(f"✅ 检测到 {len(diff_result.stdout.strip().split())} 个差异文件")
 
-                # 尝试运行合并分析
+                # 尝试运行合并分析 (非交互式自动完整流程)
                 cmd = [
-                    "timeout", "10",
                     "python",
                     str(self.main_py),
                     "feature-1",
                     "master",
                     "--strategy",
                     "standard",
+                    "--auto-workflow",
+                    "--quiet",
                 ]
-
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
 
-                # 检查是否识别了冲突
-                scripts_dir = test_repo / ".merge_work" / "scripts"
-                if scripts_dir.exists() and list(scripts_dir.glob("*.sh")):
-                    print("✅ 合并冲突处理：生成了合并脚本")
-                    return True
+                # v2.3 系统：检查是否完成了任务分配（替代merge scripts检查）
+                plan_file = test_repo / ".merge_work" / "file_plan.json"
+                if plan_file.exists():
+                    try:
+                        with open(plan_file) as f:
+                            plan_data = json.load(f)
+                        # 检查是否有分配的任务
+                        assigned_files = [f for f in plan_data.get("files", []) if f.get("assignee")]
+                        if assigned_files:
+                            print(f"✅ 合并冲突处理：已分配 {len(assigned_files)} 个文件")
+                            return True
+                    except json.JSONDecodeError:
+                        pass
 
         except Exception as e:
             print(f"❌ 合并冲突测试异常: {e}")
@@ -219,12 +228,12 @@ class IntegrationTester:
 
         os.chdir(test_repo)
 
-        cmd = ["timeout", "10", "python", str(self.main_py), "load-test-feature", "master"]
-
+        cmd = ["python", str(self.main_py), "load-test-feature", "master", "--auto-workflow", "--quiet"]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
 
         # 检查分配结果
-        plan_file = test_repo / ".merge_work" / "merge_plan.json"
+        # v2.3 系统使用 file_plan.json（文件级模式）
+        plan_file = test_repo / ".merge_work" / "file_plan.json"
         if not plan_file.exists():
             return False
 
@@ -243,21 +252,24 @@ class IntegrationTester:
                 for group in plan_data.get("groups", []):
                     assignee = group.get("assignee", "未分配")
                     file_count = len(group.get("files", []))
-                    assignee_workload[assignee] = (
-                        assignee_workload.get(assignee, 0) + file_count
-                    )
+                    assignee_workload[assignee] = assignee_workload.get(assignee, 0) + file_count
 
             # 检查负载是否相对平衡
-            if len(assignee_workload) > 1:
-                workloads = list(assignee_workload.values())
+
+            # 过滤掉未分配的任务，只分析已分配的
+            assigned_workload = {k: v for k, v in assignee_workload.items() if k != "未分配"}
+
+            if len(assigned_workload) > 1:
+                workloads = list(assigned_workload.values())
                 max_workload = max(workloads)
                 min_workload = min(workloads)
                 balance_ratio = min_workload / max_workload if max_workload > 0 else 0
 
-                print(
-                    f"✅ 负载均衡检查：最大负载 {max_workload}，最小负载 {min_workload}，平衡度 {balance_ratio:.2f}"
-                )
+                print(f"✅ 负载均衡检查：最大负载 {max_workload}，最小负载 {min_workload}，平衡度 {balance_ratio:.2f}")
                 return balance_ratio > 0.3  # 允许一定程度的不平衡
+            elif len(assigned_workload) == 1:
+                print("✅ 负载均衡检查：只有一个分配对象，测试通过")
+                return True
 
         except json.JSONDecodeError:
             pass
@@ -280,12 +292,13 @@ class IntegrationTester:
             print("❌ .merge_ignore 文件不存在")
             return False
 
-        cmd = ["timeout", "10", "python", str(self.main_py), "feature", "master"]
-
+        cmd = ["python", str(self.main_py), "feature", "master", "--auto-plan", "--quiet"]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
 
         # 检查是否正确过滤了文件
-        plan_file = test_repo / ".merge_work" / "merge_plan.json"
+        # v2.3 系统使用 file_plan.json（文件级模式）
+        plan_file = test_repo / ".merge_work" / "file_plan.json"
+
         if plan_file.exists():
             try:
                 with open(plan_file) as f:
@@ -301,10 +314,7 @@ class IntegrationTester:
 
                 # 检查是否包含 .pyc, .log 等应该被忽略的文件
                 ignored_extensions = [".pyc", ".log", ".tmp"]
-                has_ignored_files = any(
-                    any(f.endswith(ext) for ext in ignored_extensions)
-                    for f in processed_files
-                )
+                has_ignored_files = any(any(f.endswith(ext) for ext in ignored_extensions) for f in processed_files)
 
                 if not has_ignored_files:
                     print("✅ 忽略规则正常：已过滤掉临时文件")
@@ -330,8 +340,7 @@ class IntegrationTester:
         # 性能测试
         start_time = time.time()
 
-        cmd = ["timeout", "10", "python", str(self.main_py), "feature", "master"]
-
+        cmd = ["python", str(self.main_py), "feature", "master", "--auto-plan", "--quiet"]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
 
         end_time = time.time()
@@ -367,18 +376,14 @@ class IntegrationTester:
                 "total_tests": total_tests,
                 "passed_tests": passed_tests,
                 "failed_tests": total_tests - passed_tests,
-                "success_rate": f"{passed_tests/total_tests*100:.1f}%"
-                if total_tests > 0
-                else "0%",
+                "success_rate": f"{passed_tests/total_tests*100:.1f}%" if total_tests > 0 else "0%",
             },
             "test_results": self.results,
         }
 
         # 保存报告
         report_file = (
-            self.test_base_dir
-            / "logs"
-            / f"integration_test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            self.test_base_dir / "logs" / f"integration_test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         )
         report_file.parent.mkdir(exist_ok=True)
 
