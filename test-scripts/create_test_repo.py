@@ -499,8 +499,10 @@ if __name__ == "__main__":
         )
 
         # 基于复杂仓库
+        # 移除contributors和files避免重复传递
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k not in ['contributors', 'files']}
         self._create_complex_repo(
-            repo_path, files=files_count, contributors=contributors, **kwargs
+            repo_path, files=files_count, contributors=contributors, **filtered_kwargs
         )
 
         # 添加大量历史提交
