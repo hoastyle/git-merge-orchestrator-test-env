@@ -5,7 +5,7 @@
 ## 📁 目录结构
 
 ```
-git-merge-orchestrator-test/
+git-merge-orchestrator-test-env/
 ├── README.md                    # 本说明文档
 ├── test-repos/                  # 测试仓库目录
 │   ├── simple-repo/            # 简单测试仓库
@@ -26,7 +26,7 @@ git-merge-orchestrator-test/
 ### 1. 基本测试仓库创建
 
 ```bash
-cd /home/howie/Workspace/Project/tools/git-merge-orchestrator-test
+cd {working_dir}/git-merge-orchestrator-test
 
 # 创建简单测试仓库
 python test-scripts/create_test_repo.py --type simple --name my-test
@@ -143,7 +143,7 @@ python test-scripts/cleanup.py --logs
 
 ```bash
 # 1. 创建测试环境
-cd git-merge-orchestrator-test
+cd git-merge-orchestrator-test-env
 python test-scripts/create_test_repo.py --type simple --name basic-test
 
 # 2. 执行合并编排
@@ -209,7 +209,7 @@ time python ../../git-merge-orchestrator/main.py feature main
 3. **路径问题**
    ```bash
    # 使用绝对路径
-   export GMO_TEST_DIR="/home/howie/Workspace/Project/tools/git-merge-orchestrator-test"
+   export GMO_TEST_DIR="{working_dir}/git-merge-orchestrator-test-env"
    ```
 
 ### 调试模式
@@ -260,7 +260,7 @@ jobs:
       
       - name: Setup Test Environment
         run: |
-          cd git-merge-orchestrator-test
+          cd git-merge-orchestrator-test-env
           python test-scripts/setup_scenarios.py --all
       
       - name: Run Core Tests
@@ -270,7 +270,7 @@ jobs:
       
       - name: Run Integration Tests
         run: |
-          cd git-merge-orchestrator-test
+          cd git-merge-orchestrator-test-env
           python test-scripts/integration_tests.py
 ```
 
@@ -348,7 +348,7 @@ python test-scripts/verify_results.py --scenario merge-conflicts-test
 ### 新用户快速体验
 ```bash
 # 1. 进入测试目录
-cd /home/howie/Workspace/Project/tools/git-merge-orchestrator-test
+cd /home/howie/Workspace/Project/tools/git-merge-orchestrator-test-env
 
 # 2. 运行快速批量测试
 ./batch_test.sh --quick

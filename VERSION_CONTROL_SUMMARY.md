@@ -20,7 +20,7 @@
 ## 📁 版本管理的文件结构
 
 ```
-git-merge-orchestrator-test/          # 测试环境根目录
+git-merge-orchestrator-test-env/      # 测试环境根目录
 ├── .git/                             # Git仓库数据
 ├── .gitignore                        # 忽略规则配置
 ├── README.md                         # 项目说明文档
@@ -155,7 +155,7 @@ rm logs/test.log scenarios/test.json
 ```bash
 # 1. 克隆仓库（如果有远程仓库）
 git clone <repository-url>
-cd git-merge-orchestrator-test
+cd git-merge-orchestrator-test-env
 
 # 2. 验证环境
 ./git-maintenance.sh health-check

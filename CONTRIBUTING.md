@@ -245,7 +245,7 @@ Closes #123"
 1. **克隆仓库**
    ```bash
    git clone <repository-url>
-   cd git-merge-orchestrator-test
+   cd git-merge-orchestrator-test-env
    ```
 
 2. **设置开发环境**

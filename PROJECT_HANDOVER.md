@@ -20,7 +20,7 @@
 ### 新接手人员快速验证
 ```bash
 # 1. 进入测试目录
-cd /home/howie/Workspace/Project/tools/git-merge-orchestrator-test
+cd git-merge-orchestrator/test-environment
 
 # 2. 检查Git状态
 git status
@@ -127,7 +127,7 @@ git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 
 # Python路径问题  
-export PYTHONPATH="/home/howie/Workspace/Project/tools/git-merge-orchestrator:$PYTHONPATH"
+export PYTHONPATH="{working_dir}/git-merge-orchestrator:{working_dir}/git-merge-orchestrator/test-environment:$PYTHONPATH"
 
 # 权限问题
 chmod +x test-scripts/*.py

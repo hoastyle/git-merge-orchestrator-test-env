@@ -122,6 +122,7 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
+tags
 
 # Linux
 *~

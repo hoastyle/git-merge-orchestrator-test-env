@@ -6,7 +6,7 @@
 set -e  # 遇到错误立即退出
 
 # 配置
-TEST_DIR="/home/howie/Workspace/Project/tools/git-merge-orchestrator-test"
+TEST_DIR="/home/howie/Workspace/Project/tools/git-merge-orchestrator/test-environment"
 GMO_DIR="/home/howie/Workspace/Project/tools/git-merge-orchestrator"
 LOG_DIR="$TEST_DIR/logs"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
