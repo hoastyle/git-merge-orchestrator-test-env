@@ -21,7 +21,7 @@ class TestDataGenerator:
         self.base_dir = Path(base_dir)
         self.sample_files_dir = self.base_dir / "test-data" / "sample-files"
         self.configurations_dir = self.base_dir / "test-data" / "configurations"
-        
+
         # 确保目录存在
         self.sample_files_dir.mkdir(parents=True, exist_ok=True)
         self.configurations_dir.mkdir(parents=True, exist_ok=True)
@@ -29,25 +29,33 @@ class TestDataGenerator:
     def generate_sample_files(self, count=50, file_types=None):
         """生成示例文件"""
         if file_types is None:
-            file_types = ["python", "javascript", "css", "html", "json", "markdown", "config"]
+            file_types = [
+                "python",
+                "javascript",
+                "css",
+                "html",
+                "json",
+                "markdown",
+                "config",
+            ]
 
         print(f"🎲 生成 {count} 个示例文件...")
-        
+
         generated_count = 0
         for i in range(count):
             file_type = random.choice(file_types)
             file_name, content = self._generate_file_content(file_type, i)
-            
+
             # 创建子目录
             type_dir = self.sample_files_dir / file_type
             type_dir.mkdir(exist_ok=True)
-            
+
             file_path = type_dir / file_name
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
-            
+
             generated_count += 1
-            
+
             if (i + 1) % 10 == 0:
                 print(f"   生成了 {i + 1} 个文件...")
 
@@ -56,7 +64,7 @@ class TestDataGenerator:
     def generate_configurations(self):
         """生成测试配置文件"""
         print("⚙️ 生成测试配置文件...")
-        
+
         configurations = [
             ("basic_config.json", self._generate_basic_config()),
             ("advanced_config.json", self._generate_advanced_config()),
@@ -65,10 +73,10 @@ class TestDataGenerator:
             ("ignore_patterns.json", self._generate_ignore_patterns()),
             ("test_scenarios.json", self._generate_test_scenarios_config()),
         ]
-        
+
         for config_name, config_data in configurations:
             config_path = self.configurations_dir / config_name
-            with open(config_path, 'w', encoding='utf-8') as f:
+            with open(config_path, "w", encoding="utf-8") as f:
                 json.dump(config_data, f, indent=2, ensure_ascii=False)
             print(f"   ✅ 已生成: {config_name}")
 
@@ -77,85 +85,100 @@ class TestDataGenerator:
     def generate_mock_git_history(self, output_file="mock_git_history.json"):
         """生成模拟的Git历史数据"""
         print("📊 生成模拟Git历史数据...")
-        
+
         contributors = [
-            "Alice Johnson", "Bob Smith", "Charlie Brown", "Diana Prince",
-            "Eve Wilson", "Frank Miller", "Grace Lee", "Henry Ford"
+            "Alice Johnson",
+            "Bob Smith",
+            "Charlie Brown",
+            "Diana Prince",
+            "Eve Wilson",
+            "Frank Miller",
+            "Grace Lee",
+            "Henry Ford",
         ]
-        
+
         files = [
-            "src/core/main.py", "src/utils/helpers.py", "src/api/routes.py",
-            "src/models/user.py", "src/services/auth.py", "tests/test_main.py",
-            "docs/README.md", "config/settings.py", "scripts/deploy.sh"
+            "src/core/main.py",
+            "src/utils/helpers.py",
+            "src/api/routes.py",
+            "src/models/user.py",
+            "src/services/auth.py",
+            "tests/test_main.py",
+            "docs/README.md",
+            "config/settings.py",
+            "scripts/deploy.sh",
         ]
-        
+
         # 生成历史提交数据
-        history_data = {
-            "contributors": {},
-            "files": {},
-            "commits": []
-        }
-        
+        history_data = {"contributors": {}, "files": {}, "commits": []}
+
         # 初始化贡献者数据
         for contributor in contributors:
             history_data["contributors"][contributor] = {
                 "total_commits": 0,
                 "recent_commits": 0,
                 "files_touched": [],
-                "activity_score": 0
+                "activity_score": 0,
             }
-        
+
         # 初始化文件数据
         for file_path in files:
             history_data["files"][file_path] = {
                 "contributors": {},
                 "total_commits": 0,
-                "last_modified": None
+                "last_modified": None,
             }
-        
+
         # 生成提交历史
         base_date = datetime.now() - timedelta(days=365)
-        
+
         for i in range(200):  # 生成200个提交
             commit_date = base_date + timedelta(days=random.randint(0, 365))
             contributor = random.choice(contributors)
             affected_files = random.sample(files, random.randint(1, 3))
-            
+
             commit_data = {
                 "id": f"commit_{i:04d}",
                 "author": contributor,
                 "date": commit_date.isoformat(),
                 "files": affected_files,
-                "message": self._generate_commit_message()
+                "message": self._generate_commit_message(),
             }
-            
+
             history_data["commits"].append(commit_data)
-            
+
             # 更新贡献者统计
             history_data["contributors"][contributor]["total_commits"] += 1
             if commit_date > datetime.now() - timedelta(days=90):
                 history_data["contributors"][contributor]["recent_commits"] += 1
-            
+
             # 更新文件统计
             for file_path in affected_files:
                 if contributor not in history_data["files"][file_path]["contributors"]:
                     history_data["files"][file_path]["contributors"][contributor] = 0
                 history_data["files"][file_path]["contributors"][contributor] += 1
                 history_data["files"][file_path]["total_commits"] += 1
-                history_data["files"][file_path]["last_modified"] = commit_date.isoformat()
-                
-                if file_path not in history_data["contributors"][contributor]["files_touched"]:
-                    history_data["contributors"][contributor]["files_touched"].append(file_path)
-        
+                history_data["files"][file_path][
+                    "last_modified"
+                ] = commit_date.isoformat()
+
+                if (
+                    file_path
+                    not in history_data["contributors"][contributor]["files_touched"]
+                ):
+                    history_data["contributors"][contributor]["files_touched"].append(
+                        file_path
+                    )
+
         # 计算活动分数
         for contributor, data in history_data["contributors"].items():
             data["activity_score"] = data["recent_commits"] * 3 + data["total_commits"]
-        
+
         # 保存数据
         output_path = self.configurations_dir / output_file
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(history_data, f, indent=2, ensure_ascii=False)
-        
+
         print(f"✅ 模拟Git历史数据已生成: {output_path}")
 
     def _generate_file_content(self, file_type, index):
@@ -181,7 +204,7 @@ class TestDataGenerator:
         """生成Python文件"""
         class_name = f"TestClass{index:03d}"
         function_name = f"test_function_{index}"
-        
+
         content = f'''#!/usr/bin/env python3
 """
 Test module {index}
@@ -239,7 +262,7 @@ if __name__ == "__main__":
 
     def _generate_javascript_file(self, index):
         """生成JavaScript文件"""
-        content = f'''/**
+        content = f"""/**
  * Test JavaScript module {index}
  * Generated for testing purposes
  */
@@ -284,15 +307,15 @@ console.log(testObj.testFunction{index}());
 const testData = ['hello', 42, 3.14, true];
 const result = testObj.processData(testData);
 console.log('Processed data:', result);
-'''
+"""
         return f"test_module_{index:03d}.js", content
 
     def _generate_css_file(self, index):
         """生成CSS文件"""
         colors = ["#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24", "#6c5ce7", "#fd79a8"]
         color = random.choice(colors)
-        
-        content = f'''/*
+
+        content = f"""/*
  * Test CSS module {index}
  * Generated for testing purposes
  */
@@ -344,12 +367,12 @@ console.log('Processed data:', result);
         font-size: 20px;
     }}
 }}
-'''
+"""
         return f"test_styles_{index:03d}.css", content
 
     def _generate_html_file(self, index):
         """生成HTML文件"""
-        content = f'''<!DOCTYPE html>
+        content = f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -388,7 +411,7 @@ console.log('Processed data:', result);
     </script>
 </body>
 </html>
-'''
+"""
         return f"test_page_{index:03d}.html", content
 
     def _generate_json_file(self, index):
@@ -403,24 +426,22 @@ console.log('Processed data:', result);
                 "debug": random.choice([True, False]),
                 "max_items": random.randint(10, 100),
                 "timeout": random.randint(1000, 5000),
-                "retries": random.randint(1, 5)
+                "retries": random.randint(1, 5),
             },
-            "features": [
-                f"feature_{i}" for i in range(random.randint(2, 6))
-            ],
+            "features": [f"feature_{i}" for i in range(random.randint(2, 6))],
             "metadata": {
                 "author": random.choice(["Alice", "Bob", "Charlie", "Diana"]),
                 "priority": random.choice(["low", "medium", "high"]),
-                "tags": [f"tag_{i}" for i in range(random.randint(1, 4))]
-            }
+                "tags": [f"tag_{i}" for i in range(random.randint(1, 4))],
+            },
         }
-        
+
         content = json.dumps(data, indent=2, ensure_ascii=False)
         return f"test_data_{index:03d}.json", content
 
     def _generate_markdown_file(self, index):
         """生成Markdown文件"""
-        content = f'''# Test Document {index:03d}
+        content = f"""# Test Document {index:03d}
 
 This is a generated test document for testing purposes.
 
@@ -486,16 +507,16 @@ function testFunction{index}() {{
 ---
 
 *Generated by Test Data Generator v1.0*
-'''
+"""
         return f"test_doc_{index:03d}.md", content
 
     def _generate_config_file(self, index):
         """生成配置文件"""
         config_formats = ["ini", "yaml", "env"]
         format_type = random.choice(config_formats)
-        
+
         if format_type == "ini":
-            content = f'''# Test configuration file {index}
+            content = f"""# Test configuration file {index}
 # Generated for testing purposes
 
 [general]
@@ -519,11 +540,11 @@ max_size = {random.randint(100, 1000)}
 level = {random.choice(['DEBUG', 'INFO', 'WARNING', 'ERROR'])}
 file = logs/test_{index}.log
 max_size = {random.randint(10, 100)}MB
-'''
+"""
             return f"test_config_{index:03d}.ini", content
-            
+
         elif format_type == "yaml":
-            content = f'''# Test YAML configuration {index}
+            content = f"""# Test YAML configuration {index}
 # Generated for testing purposes
 
 general:
@@ -547,11 +568,11 @@ logging:
   level: {random.choice(['DEBUG', 'INFO', 'WARNING', 'ERROR'])}
   file: logs/test_{index}.log
   max_size: {random.randint(10, 100)}MB
-'''
+"""
             return f"test_config_{index:03d}.yaml", content
-            
+
         else:  # env
-            content = f'''# Test environment configuration {index}
+            content = f"""# Test environment configuration {index}
 # Generated for testing purposes
 
 APP_NAME=test_app_{index}
@@ -571,7 +592,7 @@ CACHE_MAX_SIZE={random.randint(100, 1000)}
 LOG_LEVEL={random.choice(['DEBUG', 'INFO', 'WARNING', 'ERROR'])}
 LOG_FILE=logs/test_{index}.log
 LOG_MAX_SIZE={random.randint(10, 100)}MB
-'''
+"""
             return f"test_config_{index:03d}.env", content
 
     def _generate_commit_message(self):
@@ -579,15 +600,26 @@ LOG_MAX_SIZE={random.randint(10, 100)}MB
         prefixes = ["feat", "fix", "docs", "style", "refactor", "test", "chore"]
         actions = ["add", "update", "fix", "remove", "improve", "implement", "optimize"]
         subjects = [
-            "user authentication", "api endpoints", "database queries", "error handling",
-            "unit tests", "documentation", "configuration", "performance", "security",
-            "logging", "validation", "caching", "monitoring", "deployment"
+            "user authentication",
+            "api endpoints",
+            "database queries",
+            "error handling",
+            "unit tests",
+            "documentation",
+            "configuration",
+            "performance",
+            "security",
+            "logging",
+            "validation",
+            "caching",
+            "monitoring",
+            "deployment",
         ]
-        
+
         prefix = random.choice(prefixes)
         action = random.choice(actions)
         subject = random.choice(subjects)
-        
+
         return f"{prefix}: {action} {subject}"
 
     def _generate_basic_config(self):
@@ -600,18 +632,10 @@ LOG_MAX_SIZE={random.randint(10, 100)}MB
                 "max_files_per_group": 5,
                 "max_tasks_per_person": 50,
                 "active_months": 3,
-                "analysis_months": 12
+                "analysis_months": 12,
             },
-            "contributors": [
-                "TestUser1",
-                "TestUser2",
-                "TestUser3"
-            ],
-            "ignore_patterns": [
-                "*.pyc",
-                "*.log",
-                ".DS_Store"
-            ]
+            "contributors": ["TestUser1", "TestUser2", "TestUser3"],
+            "ignore_patterns": ["*.pyc", "*.log", ".DS_Store"],
         }
 
     def _generate_advanced_config(self):
@@ -628,28 +652,41 @@ LOG_MAX_SIZE={random.randint(10, 100)}MB
                 "analysis_months": 24,
                 "enable_caching": True,
                 "cache_expiry_hours": 48,
-                "max_worker_threads": 8
+                "max_worker_threads": 8,
             },
             "contributors": [
-                "SeniorDev1", "SeniorDev2", "JuniorDev1", 
-                "JuniorDev2", "TeamLead", "Architect"
+                "SeniorDev1",
+                "SeniorDev2",
+                "JuniorDev1",
+                "JuniorDev2",
+                "TeamLead",
+                "Architect",
             ],
             "ignore_patterns": [
-                "*.pyc", "*.pyo", "*.pyd", "__pycache__/",
-                "*.log", "*.tmp", ".DS_Store", "node_modules/",
-                "build/", "dist/", ".vscode/", ".idea/"
+                "*.pyc",
+                "*.pyo",
+                "*.pyd",
+                "__pycache__/",
+                "*.log",
+                "*.tmp",
+                ".DS_Store",
+                "node_modules/",
+                "build/",
+                "dist/",
+                ".vscode/",
+                ".idea/",
             ],
             "branch_patterns": {
                 "feature_prefix": "feat/",
                 "bugfix_prefix": "fix/",
                 "hotfix_prefix": "hotfix/",
-                "integration_template": "integration-{source}-{target}"
+                "integration_template": "integration-{source}-{target}",
             },
             "load_balancing": {
                 "enabled": True,
                 "max_imbalance_ratio": 2.0,
-                "prefer_recent_contributors": True
-            }
+                "prefer_recent_contributors": True,
+            },
         }
 
     def _generate_performance_config(self):
@@ -663,19 +700,19 @@ LOG_MAX_SIZE={random.randint(10, 100)}MB
                 "max_contributors": 20,
                 "max_branches": 50,
                 "timeout_seconds": 300,
-                "memory_limit_mb": 512
+                "memory_limit_mb": 512,
             },
             "benchmarks": {
                 "file_analysis_time_ms": 100,
                 "contributor_analysis_time_ms": 500,
                 "task_assignment_time_ms": 200,
-                "script_generation_time_ms": 50
+                "script_generation_time_ms": 50,
             },
             "monitoring": {
                 "enable_profiling": True,
                 "log_performance_stats": True,
-                "track_memory_usage": True
-            }
+                "track_memory_usage": True,
+            },
         }
 
     def _generate_team_config(self):
@@ -688,29 +725,29 @@ LOG_MAX_SIZE={random.randint(10, 100)}MB
                 "frontend": {
                     "members": ["Frontend-Dev1", "Frontend-Dev2", "UI-Designer"],
                     "specialization": ["*.js", "*.jsx", "*.css", "*.html", "*.vue"],
-                    "max_tasks": 30
+                    "max_tasks": 30,
                 },
                 "backend": {
                     "members": ["Backend-Dev1", "Backend-Dev2", "API-Dev"],
                     "specialization": ["*.py", "*.java", "*.go", "*.rs"],
-                    "max_tasks": 40
+                    "max_tasks": 40,
                 },
                 "devops": {
                     "members": ["DevOps-Engineer", "SRE"],
                     "specialization": ["*.yml", "*.yaml", "*.sh", "Dockerfile", "*.tf"],
-                    "max_tasks": 20
+                    "max_tasks": 20,
                 },
                 "qa": {
                     "members": ["QA-Tester1", "QA-Tester2"],
                     "specialization": ["*test*.py", "*spec*.js", "*.feature"],
-                    "max_tasks": 25
-                }
+                    "max_tasks": 25,
+                },
             },
             "collaboration_rules": {
                 "cross_team_review": True,
                 "require_team_lead_approval": False,
-                "auto_assign_by_expertise": True
-            }
+                "auto_assign_by_expertise": True,
+            },
         }
 
     def _generate_ignore_patterns(self):
@@ -721,37 +758,56 @@ LOG_MAX_SIZE={random.randint(10, 100)}MB
             "description": "文件忽略模式配置",
             "patterns": {
                 "build_artifacts": [
-                    "build/", "dist/", "out/", "target/",
-                    "*.o", "*.obj", "*.exe", "*.dll", "*.so"
+                    "build/",
+                    "dist/",
+                    "out/",
+                    "target/",
+                    "*.o",
+                    "*.obj",
+                    "*.exe",
+                    "*.dll",
+                    "*.so",
                 ],
                 "dependencies": [
-                    "node_modules/", "vendor/", ".yarn/",
-                    "site-packages/", "Pods/"
+                    "node_modules/",
+                    "vendor/",
+                    ".yarn/",
+                    "site-packages/",
+                    "Pods/",
                 ],
                 "cache_files": [
-                    "*.pyc", "*.pyo", "*.pyd", "__pycache__/",
-                    "*.class", "*.jar", ".gradle/"
+                    "*.pyc",
+                    "*.pyo",
+                    "*.pyd",
+                    "__pycache__/",
+                    "*.class",
+                    "*.jar",
+                    ".gradle/",
                 ],
                 "temporary_files": [
-                    "*.tmp", "*.temp", "*.swp", "*.swo", "*~",
-                    ".DS_Store", "Thumbs.db"
+                    "*.tmp",
+                    "*.temp",
+                    "*.swp",
+                    "*.swo",
+                    "*~",
+                    ".DS_Store",
+                    "Thumbs.db",
                 ],
-                "log_files": [
-                    "*.log", "*.log.*", "logs/", "log/"
-                ],
+                "log_files": ["*.log", "*.log.*", "logs/", "log/"],
                 "ide_files": [
-                    ".vscode/", ".idea/", "*.sublime-*",
-                    ".eclipse/", ".settings/"
+                    ".vscode/",
+                    ".idea/",
+                    "*.sublime-*",
+                    ".eclipse/",
+                    ".settings/",
                 ],
-                "version_control": [
-                    ".git/", ".svn/", ".hg/", ".bzr/"
-                ]
+                "version_control": [".git/", ".svn/", ".hg/", ".bzr/"],
             },
             "rules": {
                 "apply_global_patterns": True,
                 "respect_gitignore": True,
-                "case_sensitive": False
-            }
+                "case_sensitive": False,
+            },
         }
 
     def _generate_test_scenarios_config(self):
@@ -766,65 +822,63 @@ LOG_MAX_SIZE={random.randint(10, 100)}MB
                     "files_count": 20,
                     "contributors": 3,
                     "conflict_probability": 0.3,
-                    "branches": ["feature-1", "feature-2"]
+                    "branches": ["feature-1", "feature-2"],
                 },
                 "file_level_processing": {
                     "description": "文件级处理测试",
                     "files_count": 50,
                     "contributors": 5,
                     "processing_mode": "file_level",
-                    "directory_depth": 4
+                    "directory_depth": 4,
                 },
                 "load_balancing": {
                     "description": "负载均衡测试",
                     "files_count": 100,
                     "contributors": 8,
                     "imbalance_ratio": 3.0,
-                    "heavy_contributors": 2
+                    "heavy_contributors": 2,
                 },
                 "performance": {
                     "description": "性能压力测试",
                     "files_count": 500,
                     "contributors": 10,
                     "commit_history": 1000,
-                    "timeout_limit": 60
-                }
+                    "timeout_limit": 60,
+                },
             },
             "validation": {
                 "max_execution_time": 300,
                 "max_memory_usage": "1GB",
-                "success_criteria": {
-                    "completion_rate": 0.95,
-                    "error_rate": 0.05
-                }
-            }
+                "success_criteria": {"completion_rate": 0.95, "error_rate": 0.05},
+            },
         }
 
 
 def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="Git Merge Orchestrator 测试数据生成工具")
-    
+
     parser.add_argument("--files", "-f", type=int, default=50, help="生成示例文件数量")
     parser.add_argument("--configs", "-c", action="store_true", help="生成配置文件")
     parser.add_argument("--history", "--hist", action="store_true", help="生成模拟Git历史")
     parser.add_argument("--all", "-a", action="store_true", help="生成所有类型的测试数据")
     parser.add_argument(
-        "--types", "-t",
+        "--types",
+        "-t",
         nargs="+",
         choices=["python", "javascript", "css", "html", "json", "markdown", "config"],
-        help="指定要生成的文件类型"
+        help="指定要生成的文件类型",
     )
     parser.add_argument(
         "--base-dir",
         default="/home/howie/Workspace/Project/tools/git-merge-orchestrator-test",
-        help="测试目录基础路径"
+        help="测试目录基础路径",
     )
 
     args = parser.parse_args()
-    
+
     generator = TestDataGenerator(args.base_dir)
-    
+
     if args.all:
         print("🚀 生成所有测试数据...")
         generator.generate_sample_files(args.files, args.types)
@@ -832,16 +886,16 @@ def main():
         generator.generate_mock_git_history()
         print("✅ 所有测试数据生成完成")
         return
-    
+
     if args.files > 0:
         generator.generate_sample_files(args.files, args.types)
-    
+
     if args.configs:
         generator.generate_configurations()
-    
+
     if args.history:
         generator.generate_mock_git_history()
-    
+
     if not any([args.files > 0, args.configs, args.history]):
         print("请指定要生成的数据类型，使用 --help 查看帮助")
         return
