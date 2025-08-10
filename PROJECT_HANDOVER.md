@@ -1,19 +1,26 @@
 # Git Merge Orchestrator 测试环境 - 项目交接文档
 
 ## 📅 交接时间
-**2025-08-06 11:45 CST**
+**初始交接**: 2025-08-06 11:45 CST  
+**最新更新**: 2025-08-10 16:15 CST（新增被忽略文件监控功能）
 
 ## 🎯 测试环境概述
 
 这是Git Merge Orchestrator的独立测试环境，提供完整的自动化测试基础设施，支持8种预定义测试场景和综合性能评估。
+
+### 🆕 最新功能（2025-08-10）
+- **被忽略文件监控**: 全面监控和管理.gitignore规则忽略的文件状态
+- **智能清理系统**: 安全清理临时文件、日志文件、Python字节码等
+- **文件变化追踪**: 自动检测被忽略文件的新增和删除变化
+- **增强状态显示**: 在status命令中集成被忽略文件统计信息
 
 ## ✅ 当前状态
 
 ### 🏆 完全配置完成
 - **Git版本管理**: ✅ 配置完整，v1.0.0标签
 - **自动化测试**: ✅ 8种场景，批量测试脚本
-- **维护工具**: ✅ 完整的管理和诊断工具
-- **文档体系**: ✅ 完整的使用和协作指南
+- **维护工具**: ✅ 完整的管理和诊断工具 **[新增被忽略文件管理]**
+- **文档体系**: ✅ 完整的使用和协作指南 **[已更新]**
 
 ## 🚀 快速开始
 
@@ -55,7 +62,9 @@ ls logs/
 
 ### 🔧 核心工具
 - `batch_test.sh` - 批量自动化测试脚本（一键运行所有测试）
-- `git-maintenance.sh` - Git仓库维护脚本（状态检查、清理等）
+- `git-maintenance.sh` - Git仓库维护脚本（状态检查、被忽略文件管理、清理等）
+  - **新增功能**: 被忽略文件监控和管理（ignored-files, cleanup-ignored, ignored-diff）
+  - **增强功能**: 集成被忽略文件统计到status命令
 
 ### 📋 测试脚本
 - `test-scripts/setup_scenarios.py` - 测试场景设置（8种预定义场景）
@@ -83,8 +92,14 @@ ls logs/
 
 ### 日常维护
 ```bash
-# 状态检查
+# 状态检查（包含被忽略文件统计）
 ./git-maintenance.sh status
+
+# 被忽略文件管理
+./git-maintenance.sh ignored-files --details        # 分析被忽略文件
+./git-maintenance.sh cleanup-ignored --dry-run      # 预览可清理文件
+./git-maintenance.sh cleanup-ignored                # 安全清理临时文件
+./git-maintenance.sh ignored-diff                   # 检查文件变化
 
 # 清理测试环境
 ./git-maintenance.sh cleanup  

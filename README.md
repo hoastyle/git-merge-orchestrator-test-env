@@ -83,6 +83,33 @@ python ../git-merge-orchestrator/main.py --repo-path ./test-repos/my-test
 
 ## 🔧 测试工具使用
 
+### Git 维护和监控工具
+
+```bash
+# Git仓库状态检查（包含被忽略文件统计）
+./git-maintenance.sh status
+
+# 被忽略文件管理
+./git-maintenance.sh ignored-files                    # 显示被忽略文件统计
+./git-maintenance.sh ignored-files --details          # 显示详细分析
+./git-maintenance.sh ignored-files --by-type --by-dir # 按类型和目录分析
+
+# 安全清理被忽略的临时文件
+./git-maintenance.sh cleanup-ignored --dry-run        # 预览可清理文件
+./git-maintenance.sh cleanup-ignored                  # 执行安全清理
+./git-maintenance.sh cleanup-ignored --aggressive     # 积极清理模式
+
+# 被忽略文件变化检测
+./git-maintenance.sh ignored-diff                     # 检查文件变化
+./git-maintenance.sh ignored-diff --since=1641038400  # 检查指定时间以来的变化
+
+# 其他维护功能
+./git-maintenance.sh cleanup                          # 清理动态生成文件
+./git-maintenance.sh commit-check                     # 检查待提交更改
+./git-maintenance.sh format-code                      # 格式化Python代码
+./git-maintenance.sh health-check                     # 仓库健康检查
+```
+
 ### 创建测试仓库工具
 
 ```bash
@@ -118,6 +145,11 @@ python test-scripts/cleanup.py --repo my-test
 
 # 清理日志文件
 python test-scripts/cleanup.py --logs
+
+# 使用Git维护脚本进行清理
+./git-maintenance.sh cleanup-ignored --dry-run        # 预览被忽略文件清理
+./git-maintenance.sh cleanup-ignored                  # 安全清理临时文件
+./git-maintenance.sh cleanup                          # 清理所有动态生成文件
 ```
 
 ## 📋 测试最佳实践
@@ -486,6 +518,21 @@ python test-scripts/setup_scenarios.py --scenario all
 python test-scripts/setup_scenarios.py --scenario merge-conflicts --debug
 ```
 
+#### 被忽略文件管理问题
+```bash
+# 检查被忽略文件状态
+./git-maintenance.sh ignored-files --details
+
+# 清理被忽略的临时文件（解决空间不足问题）
+./git-maintenance.sh cleanup-ignored --aggressive
+
+# 监控被忽略文件变化
+./git-maintenance.sh ignored-diff
+
+# 重置被忽略文件追踪记录
+rm -f .ignored_files_timestamp*
+```
+
 ### 调试模式
 ```bash
 # 启用详细输出
@@ -536,10 +583,12 @@ python -u test-scripts/integration_tests.py 2>&1 | tee debug.log
 # 一键问题诊断
 ./batch_test.sh --health-only
 
-# 检查测试环境状态
+# 检查测试环境状态（包含被忽略文件状态）
+./git-maintenance.sh status
 python test-scripts/integration_tests.py --check-env
 
 # 重置测试环境
+./git-maintenance.sh cleanup-ignored --aggressive    # 清理被忽略文件
 python test-scripts/cleanup.py --all
 python test-scripts/setup_scenarios.py --scenario all
 ```
