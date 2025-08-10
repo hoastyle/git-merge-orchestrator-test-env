@@ -871,7 +871,7 @@ def main():
     )
     parser.add_argument(
         "--base-dir",
-        default="/home/howie/Workspace/Project/tools/git-merge-orchestrator-test",
+        default=".",
         help="测试目录基础路径",
     )
 

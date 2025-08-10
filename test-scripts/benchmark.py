@@ -446,7 +446,7 @@ def main():
     parser.add_argument("--output", help="输出报告文件路径（可选）")
     parser.add_argument(
         "--test-dir",
-        default="/home/howie/Workspace/Project/tools/git-merge-orchestrator-test",
+        default=".",
         help="测试目录路径",
     )
 

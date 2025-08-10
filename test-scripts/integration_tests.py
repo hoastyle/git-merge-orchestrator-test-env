@@ -433,7 +433,7 @@ def main():
     parser = argparse.ArgumentParser(description="Git Merge Orchestrator 集成测试")
     parser.add_argument(
         "--test-dir",
-        default="/home/howie/Workspace/Project/tools/git-merge-orchestrator-test",
+        default=".",
         help="测试目录路径",
     )
 
