@@ -215,7 +215,7 @@ python test-scripts/create_test_repo.py \
 
 # 2. 执行性能测试
 cd test-repos/performance-test
-time python ../../git-merge-orchestrator/main.py feature main
+time python ../../../main.py feature-1 master
 
 # 3. 分析性能数据
 # 检查 .merge_work/performance.log

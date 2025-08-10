@@ -569,11 +569,7 @@ def main():
 
     parser.add_argument("--scenario", "-s", help="要设置的场景名称，或使用'all'设置所有场景")
     parser.add_argument("--list", "-l", action="store_true", help="列出所有可用的测试场景")
-    parser.add_argument(
-        "--base-dir",
-        default=".",
-        help="测试目录基础路径",
-    )
+    parser.add_argument("--base-dir", default=".", help="测试目录基础路径")
 
     args = parser.parse_args()
 
