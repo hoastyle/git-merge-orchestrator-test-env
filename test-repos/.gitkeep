@@ -1,2 +1,2 @@
-# 保持 test-repos 目录被Git跟踪
-# 测试仓库会动态生成在这个目录下，但不需要版本管理
+# Keep this directory in version control
+# This directory is used for storing dynamically generated test repositories
