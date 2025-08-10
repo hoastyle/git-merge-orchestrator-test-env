@@ -37,8 +37,7 @@ class TestCleanup:
                     if os.path.isdir(os.path.join(self.test_repos_dir, d))
                 ]
             )
-            shutil.rmtree(self.test_repos_dir)
-            os.makedirs(self.test_repos_dir)
+            self._clean_directory_preserve_gitkeep(self.test_repos_dir)
             cleaned_items.append("测试仓库: {} 个".format(repo_count))
 
         # 清理日志
@@ -50,8 +49,7 @@ class TestCleanup:
                     if os.path.isfile(os.path.join(self.logs_dir, f))
                 ]
             )
-            shutil.rmtree(self.logs_dir)
-            os.makedirs(self.logs_dir)
+            self._clean_directory_preserve_gitkeep(self.logs_dir)
             cleaned_items.append("日志文件: {} 个".format(log_count))
 
         # 清理场景信息
@@ -143,6 +141,10 @@ class TestCleanup:
         files_to_clean = []
 
         for log_file in all_logs:
+            # 跳过.gitkeep文件
+            if log_file == ".gitkeep":
+                continue
+
             log_path = os.path.join(self.logs_dir, log_file)
             try:
                 mtime = os.path.getmtime(log_path)
@@ -231,6 +233,31 @@ class TestCleanup:
                         break
 
         print("✅ 临时文件清理完成: {} 个项目已删除".format(cleaned_count))
+
+    def _clean_directory_preserve_gitkeep(self, directory_path):
+        """清理目录内容但保护.gitkeep文件"""
+        gitkeep_path = os.path.join(directory_path, ".gitkeep")
+        gitkeep_content = None
+
+        # 备份.gitkeep文件内容
+        if os.path.exists(gitkeep_path):
+            try:
+                with open(gitkeep_path, "r", encoding="utf-8") as f:
+                    gitkeep_content = f.read()
+            except:
+                gitkeep_content = "# Keep this directory in version control"
+
+        # 删除并重新创建目录
+        shutil.rmtree(directory_path)
+        os.makedirs(directory_path)
+
+        # 恢复.gitkeep文件
+        if gitkeep_content is not None:
+            try:
+                with open(gitkeep_path, "w", encoding="utf-8") as f:
+                    f.write(gitkeep_content)
+            except Exception as e:
+                print("   ⚠️ 无法恢复.gitkeep文件: {}".format(e))
 
     def show_status(self):
         """显示测试环境状态"""
