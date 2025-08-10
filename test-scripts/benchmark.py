@@ -101,99 +101,130 @@ class PerformanceBenchmark:
 
     def _create_benchmark_repo(self, repo_name, config):
         """创建基准测试仓库"""
-        # 先清理可能存在的旧仓库
-        old_repo_path = self.test_base_dir / "test-repos" / repo_name
-        if old_repo_path.exists():
-            import shutil
+        # 确保在正确的基础目录下操作
+        original_cwd = os.getcwd()
+        os.chdir(self.test_base_dir)
 
-            shutil.rmtree(old_repo_path)
+        try:
+            # 先清理可能存在的旧仓库
+            old_repo_path = self.test_base_dir / "test-repos" / repo_name
+            if old_repo_path.exists():
+                import shutil
 
-        # 创建新的测试仓库
-        repo_path = self.creator.create_repo(
-            repo_name,
-            config["type"],
-            contributors=config["contributors"],
-            files=config["files"],
-            branches=config["branches"],
-        )
+                shutil.rmtree(old_repo_path)
 
-        return repo_path
+            # 创建新的测试仓库
+            repo_path = self.creator.create_repo(
+                repo_name,
+                config["type"],
+                contributors=config["contributors"],
+                files=config["files"],
+                branches=config["branches"],
+            )
+
+            return repo_path
+        finally:
+            os.chdir(original_cwd)
 
     def _run_single_benchmark(self, repo_path, scenario):
         """运行单次基准测试"""
-        os.chdir(repo_path)
+        original_cwd = os.getcwd()
 
-        # 测试不同的处理模式
-        modes = ["file_level", "group_based"]
-        mode_results = {}
+        try:
+            os.chdir(repo_path)
 
-        for mode in modes:
-            print(f"    📋 测试模式: {mode}")
+            # 测试不同的处理模式
+            modes = ["file_level", "group_based"]
+            mode_results = {}
 
-            # 确定要测试的分支
-            branches = self._get_test_branches(repo_path)
-            if not branches:
-                continue
+            for mode in modes:
+                print(f"    📋 测试模式: {mode}")
 
-            source_branch, target_branch = branches[0], "master"
+                # 确定要测试的分支
+                branches = self._get_test_branches(".")
+                if not branches:
+                    continue
 
-            # 执行性能测试
-            start_time = time.time()
+                source_branch, target_branch = branches[0], "master"
 
-            cmd = [
-                "python",
-                str(self.main_py),
-                source_branch,
-                target_branch,
-                "--processing-mode",
-                mode,
-            ]
+                # 执行性能测试
+                start_time = time.time()
 
-            try:
-                result = subprocess.run(
-                    cmd, capture_output=True, text=True, timeout=300  # 5分钟超时
-                )
+                cmd = [
+                    "python3",
+                    str(self.main_py),
+                    source_branch,
+                    target_branch,
+                    "--processing-mode",
+                    mode,
+                    "--auto-workflow",
+                    "--quiet",
+                ]
 
-                end_time = time.time()
-                duration = end_time - start_time
+                try:
+                    # 设置环境变量以支持UTF-8编码
+                    env = os.environ.copy()
+                    env["PYTHONIOENCODING"] = "utf-8"
+                    env["LANG"] = "en_US.UTF-8"
+                    env["LC_ALL"] = "en_US.UTF-8"
 
-                # 收集性能指标
-                metrics = self._collect_performance_metrics(repo_path, duration, result)
-                mode_results[mode] = metrics
+                    result = subprocess.run(
+                        cmd,
+                        capture_output=True,
+                        text=True,
+                        timeout=300,  # 5分钟超时
+                        env=env,
+                        encoding="utf-8",
+                    )
 
-                print(f"      ⏱️ 耗时: {duration:.2f}秒")
+                    end_time = time.time()
+                    duration = end_time - start_time
 
-            except subprocess.TimeoutExpired:
-                print(f"      ⚠️ 超时 (>300秒)")
-                mode_results[mode] = {"timeout": True, "duration": 300}
+                    # 收集性能指标
+                    metrics = self._collect_performance_metrics(
+                        repo_path, duration, result
+                    )
+                    mode_results[mode] = metrics
 
-            except Exception as e:
-                print(f"      ❌ 错误: {e}")
-                mode_results[mode] = {"error": str(e)}
+                    print(f"      ⏱️ 耗时: {duration:.2f}秒")
 
-            # 清理工作目录
-            self._cleanup_work_dir(repo_path)
+                except subprocess.TimeoutExpired:
+                    print(f"      ⚠️ 超时 (>300秒)")
+                    mode_results[mode] = {"timeout": True, "duration": 300}
 
-        return mode_results
+                except Exception as e:
+                    print(f"      ❌ 错误: {e}")
+                    mode_results[mode] = {"error": str(e)}
+
+                # 清理工作目录
+                self._cleanup_work_dir(repo_path)
+
+            return mode_results
+        finally:
+            os.chdir(original_cwd)
 
     def _get_test_branches(self, repo_path):
         """获取可用的测试分支"""
         try:
+            # 确保路径是绝对路径
+            abs_repo_path = Path(repo_path).resolve()
+
+            # 检查本地分支
             result = subprocess.run(
-                ["git", "branch", "-r"], cwd=repo_path, capture_output=True, text=True
+                ["git", "branch"], cwd=abs_repo_path, capture_output=True, text=True
             )
 
             if result.returncode == 0:
                 branches = []
                 for line in result.stdout.strip().split("\n"):
-                    branch = line.strip().replace("origin/", "")
-                    if branch and branch != "master" and not branch.startswith("HEAD"):
+                    branch = line.strip().replace("* ", "")  # 移除当前分支标记
+                    if branch and branch != "master" and branch != "main":
                         branches.append(branch)
-                return branches
+                if branches:
+                    return branches
 
         except Exception:
             pass
-
         return ["feature"]  # 默认分支
 
     def _collect_performance_metrics(self, repo_path, duration, result):
@@ -207,7 +238,7 @@ class PerformanceBenchmark:
         # 检查生成的文件
         merge_work_dir = repo_path / ".merge_work"
         if merge_work_dir.exists():
-            plan_file = merge_work_dir / "merge_plan.json"
+            plan_file = merge_work_dir / "file_plan.json"
             if plan_file.exists():
                 try:
                     with open(plan_file) as f:
